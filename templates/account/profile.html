@@ -1,0 +1,53 @@
+{% extends 'todos/base.html' %}
+{% block title %}Profil{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>👤 Profil</h1>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+
+    <!-- Profil ma'lumotlari -->
+    <div class="card">
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--accent);
+                        display: flex; align-items: center; justify-content: center;
+                        font-size: 1.8rem; font-weight: 700; color: #fff;">
+                {{ user.username|first|upper }}
+            </div>
+            <div>
+                <div style="font-size: 1.1rem; font-weight: 600;">{{ user.username }}</div>
+                <div style="font-size: 0.85rem; color: var(--muted);">{{ user.email|default:"Email yo'q" }}</div>
+                <div style="font-size: 0.75rem; color: var(--muted); margin-top: 2px;">
+                    A'zo bo'lgan: {{ user.date_joined|date:"d.m.Y" }}
+                </div>
+            </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--border); padding-top: 1rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.6rem;">
+                <span style="color: var(--muted); font-size: 0.875rem;">Jami vazifalar</span>
+                <span style="font-weight: 600;">{{ total }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.6rem;">
+                <span style="color: var(--muted); font-size: 0.875rem;">Bajarilgan</span>
+                <span style="font-weight: 600; color: var(--success);">{{ completed }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--muted); font-size: 0.875rem;">Faol</span>
+                <span style="font-weight: 600; color: var(--warning);">{{ active }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Parol o'zgartirish -->
+    <div class="card">
+        <h3 style="margin-bottom: 1.2rem; font-size: 1rem;">🔑 Parol o'zgartirish</h3>
+        <a href="{% url 'account_change_password' %}" class="btn btn-outline" style="width: 100%; justify-content: center;">
+            Parolni o'zgartirish
+        </a>
+    </div>
+
+</div>
+{% endblock %}

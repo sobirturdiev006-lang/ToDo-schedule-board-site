@@ -1,0 +1,16 @@
+{% extends 'todos/base.html' %}
+{% block title %}Chiqish{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>👋 Chiqish</h1>
+</div>
+<div class="card" style="max-width: 400px;">
+    <p style="color: var(--muted); margin-bottom: 1.5rem;">Hisobdan chiqmoqchimisiz?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Ha, chiqish</button>
+        <a href="/" class="btn btn-outline" style="margin-left: 8px;">Bekor qilish</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'todos/base.html' %}
+{% block title %}Kirish{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🔐 Kirish</h1>
+</div>
+
+<div class="card" style="max-width: 400px;">
+    {% if form.errors %}
+    <div style="background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3);
+                color: var(--danger); padding: 10px 14px; border-radius: 8px;
+                font-size: 0.875rem; margin-bottom: 1.2rem;">
+        ⚠️ Username yoki parol noto'g'ri. Qayta urinib ko'ring.
+    </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            <label>{{ field.label }}</label>
+            {{ field }}
+        </div>
+        {% endfor %}
+        <div style="display: flex; gap: 8px; margin-top: 1.5rem; align-items: center;">
+            <button type="submit" class="btn btn-primary">Kirish</button>
+            <a href="{% url 'account_signup' %}" style="font-size: 0.85rem; color: var(--muted);">Akkount yo'qmi? Ro'yxatdan o'ting</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

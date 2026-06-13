@@ -1,0 +1,23 @@
+{% extends 'todos/base.html' %}
+{% block title %}O'chirish{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🗑️ O'chirishni tasdiqlang</h1>
+</div>
+
+<div class="card" style="max-width: 480px;">
+    <p style="margin-bottom: 1.2rem; color: var(--muted);">
+        {% if todo %}
+        <strong style="color: var(--text)">{{ todo.title }}</strong> vazifasini o'chirmoqchimisiz?
+        {% else %}
+        <strong style="color: var(--text)">{{ category.name }}</strong> kategoriyasini o'chirmoqchimisiz?
+        {% endif %}
+    </p>
+    <form method="post" style="display: flex; gap: 8px;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Ha, o'chirilsin</button>
+        <a href="{% url 'todo_list' %}" class="btn btn-outline">Bekor qilish</a>
+    </form>
+</div>
+{% endblock %}

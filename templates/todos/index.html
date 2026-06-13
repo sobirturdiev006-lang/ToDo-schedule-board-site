@@ -1,0 +1,197 @@
+{% extends 'todos/base.html' %}
+{% block title %}Barchasi{% endblock %}
+
+{% block extra_styles %}
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.2rem;
+    text-align: center;
+}
+.stat-num { font-size: 1.8rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+.filters {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.filters label { font-size: 0.8rem; color: var(--muted); }
+.filters select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    outline: none;
+}
+
+.todo-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.2rem;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    transition: border-color 0.2s, transform 0.15s;
+}
+.todo-item:hover { border-color: var(--accent); transform: translateX(2px); }
+.todo-item.done { opacity: 0.5; }
+.todo-item.done .todo-title { text-decoration: line-through; }
+
+.todo-check form { margin: 0; }
+.check-btn {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+    color: transparent;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+.check-btn:hover { border-color: var(--accent); }
+.done .check-btn { background: var(--success); border-color: var(--success); color: #fff; }
+
+.todo-body { flex: 1; min-width: 0; }
+.todo-title { font-size: 0.95rem; font-weight: 500; margin-bottom: 4px; }
+.todo-desc { font-size: 0.82rem; color: var(--muted); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.todo-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.badge {
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+/* o'rniga */
+.badge-0 { background: rgba(100,116,139,0.2); color: var(--muted); }
+.badge-1 { background: rgba(251,191,36,0.15); color: var(--warning); }
+.badge-2 { background: rgba(248,113,113,0.15); color: var(--danger); }
+.cat-badge {
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 500;
+}
+.todo-date { font-size: 0.75rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+
+
+.todo-actions { display: flex; gap: 4px; align-items: center; margin-top: 2px; }
+
+.empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--muted);
+}
+.empty-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+{% endblock %}
+
+{% block content %}
+<!-- Stats -->
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-num" style="color:var(--accent)">{{ total }}</div>
+        <div class="stat-label">Jami</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-num" style="color:var(--warning)">{{ active }}</div>
+        <div class="stat-label">Faol</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-num" style="color:var(--success)">{{ completed }}</div>
+        <div class="stat-label">Bajarilgan</div>
+    </div>
+</div>
+
+<!-- Page header -->
+<div class="page-header">
+    <h1>📋 Vazifalar</h1>
+    <a href="{% url 'todo_create' %}" class="btn btn-primary">+ Yangi vazifa</a>
+</div>
+
+<!-- Filters -->
+<form class="filters" method="get">
+    <label>Kategoriya:</label>
+    <select name="category" onchange="this.form.submit()">
+        <option value="">Barchasi</option>
+        {% for cat in categories %}
+        <option value="{{ cat.pk }}" {% if request.GET.category == cat.pk|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+        {% endfor %}
+    </select>
+    <label>Muhimlik:</label>
+    <select name="priority" onchange="this.form.submit()">
+        <option value="">Barchasi</option>
+        <option value="0" {% if request.GET.priority == "0" %}selected{% endif %}>Past</option>
+        <option value="1" {% if request.GET.priority == "1" %}selected{% endif %}>O'rta</option>
+        <option value="2" {% if request.GET.priority == "2" %}selected{% endif %}>Yuqori</option>
+    </select>
+    <label>Holat:</label>
+    <select name="status" onchange="this.form.submit()">
+        <option value="">Barchasi</option>
+        <option value="active" {% if request.GET.status == "active" %}selected{% endif %}>Faol</option>
+        <option value="completed" {% if request.GET.status == "completed" %}selected{% endif %}>Bajarilgan</option>
+    </select>
+    {% if request.GET %}
+    <a href="{% url 'todo_list' %}" class="btn btn-outline btn-sm">✕ Tozalash</a>
+    {% endif %}
+</form>
+
+<!-- Todo list -->
+{% if todos %}
+    {% for todo in todos %}
+    <div class="todo-item {% if todo.is_completed %}done{% endif %}">
+        <div class="todo-check">
+            <form action="{% url 'todo_toggle' todo.pk %}" method="post">
+                {% csrf_token %}
+                <button class="check-btn" type="submit" title="{% if todo.is_completed %}Bekor qilish{% else %}Bajarildi{% endif %}">✓</button>
+            </form>
+        </div>
+        <div class="todo-body">
+            <div class="todo-title">{{ todo.title }}</div>
+            {% if todo.description %}
+            <div class="todo-desc">{{ todo.description }}</div>
+            {% endif %}
+            <div class="todo-meta">
+                <span class="badge badge-{{ todo.priority }}">{{ todo.get_priority_display }}</span>
+                {% if todo.category %}
+                <span class="cat-badge" style="background: {{ todo.category.color }}22; color: {{ todo.category.color }}">{{ todo.category.name }}</span>
+                {% endif %}
+                <span class="todo-date">{{ todo.created_at|date:"d.m.Y" }}</span>
+            </div>
+        </div>
+        <div class="todo-actions">
+            <a href="{% url 'todo_update' todo.pk %}" class="btn btn-outline btn-icon btn-sm" title="Tahrirlash">✏️</a>
+            <a href="{% url 'todo_delete' todo.pk %}" class="btn btn-danger btn-icon btn-sm" title="O'chirish">🗑️</a>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="empty">
+        <div class="empty-icon">📭</div>
+        <p>Hozircha vazifalar yo'q.</p>
+        <a href="{% url 'todo_create' %}" class="btn btn-primary" style="margin-top:1rem">+ Birinchi vazifani qo'shing</a>
+    </div>
+{% endif %}
+{% endblock %}

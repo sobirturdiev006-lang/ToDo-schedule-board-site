@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Todo{% endblock %} — Vazifalar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+          rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #0d0f14;
+            --surface: #161922;
+            --surface2: #1e2330;
+            --border: #2a3045;
+            --accent: #7c6af7;
+            --accent2: #4fd1c5;
+            --danger: #f87171;
+            --warning: #fbbf24;
+            --success: #34d399;
+            --text: #e2e8f0;
+            --muted: #64748b;
+            --radius: 12px;
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* NAVBAR */
+        nav {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .nav-logo span { color: var(--text); }
+        .nav-links { display: flex; gap: 4px; }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--muted);
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            background: var(--surface2);
+            color: var(--text);
+        }
+
+        /* MAIN */
+        main { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+        /* ALERTS */
+        .messages { margin-bottom: 1.5rem; }
+        .alert {
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            margin-bottom: 8px;
+            background: rgba(52, 211, 153, 0.1);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            color: var(--success);
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+        }
+
+        /* BUTTONS */
+                .nav-user { position: relative; }
+        .user-btn {
+            display: flex; align-items: center; gap: 8px;
+            background: var(--surface2); border: 1px solid var(--border);
+            color: var(--text); padding: 6px 12px; border-radius: 8px;
+            cursor: pointer; font-family: 'Sora', sans-serif; font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        .user-btn:hover { border-color: var(--accent); }
+        .avatar {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: var(--accent); color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; font-weight: 700;
+        }
+        .dropdown {
+            display: none; position: absolute; right: 0; top: calc(100% + 8px);
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); min-width: 180px;
+            overflow: hidden; z-index: 200;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+        .dropdown a, .dropdown-logout {
+            display: block; padding: 10px 16px;
+            color: var(--text); text-decoration: none; font-size: 0.875rem;
+            transition: background 0.15s; width: 100%; text-align: left;
+            background: transparent; border: none; cursor: pointer;
+            font-family: 'Sora', sans-serif;
+        }
+        .dropdown a:hover, .dropdown-logout:hover { background: var(--surface2); }
+        .dropdown.open { display: block; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-family: 'Sora', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-primary:hover { background: #6b5cf0; transform: translateY(-1px); }
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .btn-outline:hover { background: var(--surface2); }
+        .btn-danger { background: rgba(248,113,113,0.15); color: var(--danger); border: 1px solid rgba(248,113,113,0.3); }
+        .btn-danger:hover { background: rgba(248,113,113,0.25); }
+        .btn-sm { padding: 5px 12px; font-size: 0.8rem; }
+        .btn-icon { padding: 6px; border-radius: 6px; }
+
+        /* FORM */
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; font-size: 0.875rem; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+        .form-input {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-family: 'Sora', sans-serif;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+        .form-input:focus { border-color: var(--accent); }
+        .form-input option { background: var(--surface2); }
+        .color-input { height: 44px; padding: 4px; cursor: pointer; }
+
+        /* PAGE HEADER */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        .page-header h1 { font-size: 1.5rem; font-weight: 700; }
+
+        {% block extra_styles %}{% endblock %}
+    </style>
+</head>
+<script>
+    function toggleMenu() {
+        document.getElementById('dropdown').classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.user-menu')) {
+            document.getElementById('dropdown')?.classList.remove('open');
+        }
+    });
+</script>
+<body>
+<nav>
+    <a href="{% url 'todo_list' %}" class="nav-logo">✦ <span>Vazifalar</span></a>
+    <div class="nav-links">
+        <a href="{% url 'todo_list' %}"
+           class="{% if request.resolver_match.url_name == 'todo_list' %}active{% endif %}">📋 Barchasi</a>
+        <a href="{% url 'category_list' %}"
+           class="{% if 'category' in request.resolver_match.url_name %}active{% endif %}">🏷️ Kategoriyalar</a>
+    </div>
+    <div class="nav-user">
+        {% if user.is_authenticated %}
+        <div class="user-menu">
+            <button class="user-btn" onclick="toggleMenu()">
+                <div class="avatar">{{ user.username|first|upper }}</div>
+                <span>{{ user.username }}</span>
+                <span style="font-size:0.7rem; color:var(--muted)">▼</span>
+            </button>
+            <div class="dropdown" id="dropdown">
+                <a href="{% url 'profile' %}">👤 Profil</a>
+                <a href="{% url 'account_change_password' %}">🔑 Parol o'zgartirish</a>
+                <form method="post" action="{% url 'account_logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="dropdown-logout">🚪 Chiqish</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <a href="{% url 'account_login' %}" class="btn btn-primary btn-sm">Kirish</a>
+        {% endif %}
+    </div>
+</nav>
+
+<main>
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert">✓ {{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</main>
+</body>
+</html>

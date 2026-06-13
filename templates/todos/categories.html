@@ -1,0 +1,26 @@
+{% extends 'todos/base.html' %}
+{% block title %}Kategoriyalar{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🏷️ Kategoriyalar</h1>
+    <a href="{% url 'category_create' %}" class="btn btn-primary">+ Yangi kategoriya</a>
+</div>
+
+{% if categories %}
+    {% for cat in categories %}
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.2rem; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 1rem;">
+        <span style="width: 18px; height: 18px; border-radius: 50%; background: {{ cat.color }}; flex-shrink: 0;"></span>
+        <span style="flex: 1; font-weight: 500;">{{ cat.name }}</span>
+        <span style="font-size: 0.8rem; color: var(--muted);">{{ cat.todos.count }} vazifa</span>
+        <a href="{% url 'category_delete' cat.pk %}" class="btn btn-danger btn-sm">O'chirish</a>
+    </div>
+    {% endfor %}
+{% else %}
+    <div style="text-align:center; padding: 3rem; color: var(--muted);">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🏷️</div>
+        <p>Hozircha kategoriyalar yo'q.</p>
+        <a href="{% url 'category_create' %}" class="btn btn-primary" style="margin-top:1rem">+ Kategoriya qo'shing</a>
+    </div>
+{% endif %}
+{% endblock %}
