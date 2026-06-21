@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -18,6 +19,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     #allauth
+    'redis',
     'django.contrib.sites',
     'allauth',
     'allauth.account',
@@ -27,6 +29,9 @@ INSTALLED_APPS = [
     'todos',
 ]
 SITE_ID = 2
+
+REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
+REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

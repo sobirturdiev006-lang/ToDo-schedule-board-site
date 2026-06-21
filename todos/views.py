@@ -3,7 +3,11 @@ from django.contrib import messages
 from .models import Todo, Category
 from .forms import TodoForm, CategoryForm
 from django.contrib.auth.decorators import login_required
+import json
+import redis
+from .redis_client import r
 
+r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 
 @login_required
 def todo_list(request):
@@ -41,6 +45,7 @@ def todo_create(request):
             todo = form.save(commit=False)
             todo.user = request.user
             todo.save()
+            r.delete(f"user_stats:{request.user.id}")
             messages.success(request, "Vazifa qo'shildi!")
             return redirect('todo_list')
     else:
@@ -67,6 +72,7 @@ def todo_delete(request, pk):
     todo = get_object_or_404(Todo, pk=pk)
     if request.method == 'POST':
         todo.delete()
+        r.delete(f"user_stats:{request.user.id}")
         messages.success(request, "Vazifa o'chirildi!")
         return redirect('todo_list')
     return render(request, 'todos/confirm_delete.html', {'todos': todo})
@@ -77,6 +83,7 @@ def todo_toggle(request, pk):
     todo = get_object_or_404(Todo, pk=pk)
     todo.is_completed = not todo.is_completed
     todo.save()
+    r.delete(f"user_stats:{request.user.id}")
     return redirect('todo_list')
 
 
@@ -111,9 +118,15 @@ def category_delete(request, pk):
 
 @login_required
 def profile(request):
-    context = {
-        'total': Todo.objects.filter(user=request.user).count(),
-        'completed': Todo.objects.filter(user=request.user, is_completed=True).count(),
-        'active': Todo.objects.filter(user=request.user, is_completed=False).count(),
-    }
+    cache_key = f"user_stats:{request.user.id}"
+    cached = r.get(cache_key)
+    if cached:
+        context = json.loads(cached)
+    else:
+        context = {
+            'total': Todo.objects.filter(user=request.user).count(),
+            'completed': Todo.objects.filter(user=request.user, is_completed=True).count(),
+            'active': Todo.objects.filter(user=request.user, is_completed=False).count(),
+        }
+        r.set(cache_key, json.dumps(context), ex=30)
     return render(request, 'account/profile.html', context)

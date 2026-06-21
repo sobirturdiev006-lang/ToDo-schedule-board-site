@@ -50,10 +50,9 @@ python manage.py runserver
 todo/
 ├── config/          → Sozlamalar (settings, urls)
 ├── todos/           → Asosiy ilova (models, views, forms)
-│   └── templates/
-│       └── todos/   → HTML shablonlar
 ├── templates/
 │   └── account/     → Allauth shablonlar
+    └── todos/   → HTML shablonlar
 ├── manage.py
 └── requirements.txt
 ```
