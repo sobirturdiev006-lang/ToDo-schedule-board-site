@@ -26,6 +26,6 @@ staticfiles/
 Thumbs.db
 
 # Secrets
-.env
 *.env
+*.env.example
 local_settings.py
