@@ -5,12 +5,17 @@ from dotenv import dotenv_values
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 ENV = dotenv_values(BASE_DIR / '.env')
+
 SECRET_KEY = ENV.get('SECRET_KEY')
+if not SECRET_KEY:
+    raise ValueError(
+        "SECRET_KEY topilmadi. Loyiha ildizida .env fayl yarating va "
+        "SECRET_KEY=your-secret-key qatorini qo'shing (.env.example'ga qarang)."
+    )
 
-DEBUG = True
+DEBUG = ENV.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ["*"]
-
+ALLOWED_HOSTS = ENV.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
