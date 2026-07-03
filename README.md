@@ -57,6 +57,7 @@ todo/
 └── requirements.txt
 ```
 
+
 ## 🔑 Muhim sozlamalar
 
 `.env` faylida saqlang (hozircha `settings.py` da):

@@ -21,7 +21,7 @@ class Todo(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='todos')
     status = models.IntegerField(choices=TODO.STATUS.Constants,default=0)
     priority = models.IntegerField(max_length=10, choices=TODO.PRIORITY.PRIORITY_CHOICES, default=1)
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=100)
     deadline = models.DateTimeField(null=True, blank=True)
     description = models.TextField(blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='todos')
