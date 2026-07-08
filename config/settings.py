@@ -27,7 +27,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     #allauth
-    'redis',
     'django.contrib.sites',
     'allauth',
     'allauth.account',

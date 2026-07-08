@@ -60,7 +60,6 @@ todo/
 
 ## 🔑 Muhim sozlamalar
 
-`.env` faylida saqlang (hozircha `settings.py` da):
 ```python
 SECRET_KEY = 'your-secret-key'
 DEBUG = True
